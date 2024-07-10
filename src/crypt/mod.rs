@@ -14,7 +14,6 @@ pub struct EncryptContent {
 
 pub fn encrypt_into_b64u(key: &[u8], encrypt_content: &EncryptContent) -> Result<String> {
 	let EncryptContent { content, salt } = encrypt_content;
-	debug!(" Encrypt key: {key:?}");
 
 	// Create hmac from Key
 	let mut hmac_sha512 = Hmac::<Sha512>::new_from_slice(key).map_err(|_| Error::KeyFailedHmac)?;

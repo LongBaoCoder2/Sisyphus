@@ -37,13 +37,10 @@ pub async fn mw_ctx_resolve<B>(
 	let _auth_token = cookies.get(AUTH_TOKEN).map(|c| c.value().to_string());
 
 	// FIXME - Compute real CtxAuthResult<Ctx>.
-	let result_ctx =
-		Ctx::new(100).map_err(|ex| CtxExtError::CtxCreateFail(ex.to_string()));
+	let result_ctx = Ctx::new(100).map_err(|ex| CtxExtError::CtxCreateFail(ex.to_string()));
 
 	// Remove the cookie if something went wrong other than NoAuthTokenCookie.
-	if result_ctx.is_err()
-		&& !matches!(result_ctx, Err(CtxExtError::TokenNotInCookie))
-	{
+	if result_ctx.is_err() && !matches!(result_ctx, Err(CtxExtError::TokenNotInCookie)) {
 		cookies.remove(Cookie::named(AUTH_TOKEN))
 	}
 

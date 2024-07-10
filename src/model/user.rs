@@ -82,6 +82,7 @@ impl UserBmc {
 	{
 		let user = sqlb::select()
 			.table(Self::TABLE)
+			.columns(E::field_names())
 			.and_where("username", "=", username)
 			.fetch_optional(mm.db())
 			.await?;
@@ -89,7 +90,6 @@ impl UserBmc {
 	}
 
 	pub async fn update_pwd(ctx: &Ctx, mm: &ModelManager, id: i64, raw_pwd: &str) -> Result<()> {
-		debug!("{raw_pwd}");
 		let user: UserForLogin = Self::get(ctx, mm, id).await?;
 		let ec_content = EncryptContent {
 			content: raw_pwd.to_string(),
@@ -97,7 +97,6 @@ impl UserBmc {
 		};
 
 		let pwd = pwd::encrypt_pwd(&ec_content)?;
-		debug!("{pwd}");
 
 		let row_effected = sqlb::update()
 			.table(Self::TABLE)

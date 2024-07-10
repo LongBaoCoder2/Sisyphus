@@ -1,4 +1,4 @@
-use crate::web;
+use crate::{model, web};
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use serde::Serialize;
@@ -10,11 +10,24 @@ pub type Result<T> = core::result::Result<T, Error>;
 #[serde(tag = "type", content = "data")]
 pub enum Error {
 	// -- Login
-	LoginFail,
+	LoginFailUsernameNotFound,
+	LoginFailPwdNotFound { id: i64 },
+	LoginFailPwdNotMatching { id: i64 },
 
 	// -- CtxExtError
 	CtxExt(web::mw_auth::CtxExtError),
+
+	// Model
+	ModelError(model::Error),
 }
+
+// region:    --- Model Error
+impl From<model::Error> for Error {
+	fn from(value: model::Error) -> Self {
+		Self::ModelError(value)
+	}
+}
+// endregion: --- Model Error
 
 // region:    --- Axum IntoResponse
 impl IntoResponse for Error {
@@ -34,10 +47,7 @@ impl IntoResponse for Error {
 
 // region:    --- Error Boilerplate
 impl core::fmt::Display for Error {
-	fn fmt(
-		&self,
-		fmt: &mut core::fmt::Formatter,
-	) -> core::result::Result<(), core::fmt::Error> {
+	fn fmt(&self, fmt: &mut core::fmt::Formatter) -> core::result::Result<(), core::fmt::Error> {
 		write!(fmt, "{self:?}")
 	}
 }
@@ -54,7 +64,12 @@ impl Error {
 
 		#[allow(unreachable_patterns)]
 		match self {
-			// -- Login/Auth
+			// -- Login
+			LoginFailPwdNotFound { .. }
+			| LoginFailPwdNotMatching { .. }
+			| LoginFailUsernameNotFound => (StatusCode::FORBIDDEN, ClientError::LOGIN_FAIL),
+
+			// -- Auth
 			CtxExt(_) => (StatusCode::FORBIDDEN, ClientError::NO_AUTH),
 
 			// -- Fallback.

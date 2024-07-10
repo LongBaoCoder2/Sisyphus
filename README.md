@@ -1,12 +1,5 @@
 # AwesomeApp rust-web-app
 
-More info at: https://awesomeapp.dev/rust-web-app/
-
-- rust-web-app YouTube episodes:
-  - [Episode 01 - Rust Web App - Course to Production Coding](https://youtube.com/watch?v=3cA_mk4vdWY&list=PL7r-PXl6ZPcCIOFaL7nVHXZvBmHNhrh_Q)
-- Related videos:
-  - [Rust Axum Full Course](https://youtube.com/watch?v=XZtlD_m59sM&list=PL7r-PXl6ZPcCIOFaL7nVHXZvBmHNhrh_Q)
-
 ## Starting the DB
 
 ```sh
